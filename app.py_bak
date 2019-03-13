@@ -1,0 +1,35 @@
+"""
+Created by Alex
+"""
+import json
+
+from flask import Flask, make_response, jsonify
+from helper import is_isbn_or_key
+from yushu_book import YuShuBook
+
+__author__ = 'Alex'
+
+app = Flask(__name__)
+
+# 开启调试模式1
+# app.debug = True
+
+# 导入配置文件,就可以使用
+app.config.from_object('config')
+
+
+# @app.route('/hello/')
+# def hello():
+#     headers = {
+#         'content-type': 'text/plain',
+#         'location': 'http://www.baidu.com'
+#     }
+#     # response = make_response('hello', 301)
+#     # response.headers = headers
+#     # return response
+#     return 'hello', 301, headers
+
+
+if __name__ == '__main__':
+    # 开启调试模式2
+    app.run(host='0.0.0.0')
