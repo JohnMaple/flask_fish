@@ -2,4 +2,4 @@
 Created by Alex
 """
 
-DEBUG = False
+DEBUG = True

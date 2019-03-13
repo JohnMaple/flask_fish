@@ -4,9 +4,11 @@ Created by Alex
 from flask import jsonify, Blueprint
 from helper import is_isbn_or_key
 from yushu_book import YuShuBook
+from . import web
+
 
 # 引入蓝图
-web = Blueprint('web', __name__)
+# web = Blueprint('web', __name__)
 
 
 @web.route('/book/search/<q>/<page>')
