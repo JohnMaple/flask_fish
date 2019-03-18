@@ -3,8 +3,9 @@ Created by Alex
 """
 from flask import Blueprint
 
-web = Blueprint('web', __package__)
+web = Blueprint('web', __name__)
 
-from app.web import book
-from app.web import user
+from app.web import book, auth, drift, gift, main, wish
+
+
 

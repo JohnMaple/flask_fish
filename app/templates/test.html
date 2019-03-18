@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+{% block content %}
+    {{ super() }}
+
+    {# 过滤器 #}
+    {{ name | default('未名') }}
+    {% for foo in request %}
+
+    {% endfor %}
+
+    {% if config %}
+
+    {% endif %}
+{% endblock %}
