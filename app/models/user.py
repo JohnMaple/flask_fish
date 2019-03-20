@@ -1,12 +1,19 @@
+from math import floor
+
+from flask import current_app
+
+from app.libs.enums import PendingStatus
 from app.libs.helper import is_isbn_or_key
-from app.models.base import Base
+from app.models.base import Base, db
 from sqlalchemy import Column, Integer, String, Boolean, Float
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app import login_manager
+from app.models.drift import Drift
 from app.models.gift import Gift
 from app.models.wish import Wish
 from app.spider.yushu_book import YuShuBook
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 
 class User(UserMixin, Base):
@@ -52,6 +59,46 @@ class User(UserMixin, Base):
         else:
             return False
 
+    def generate_token(self, expiration=600):
+        # 序列化器
+        serializer = Serializer(current_app.config['SECRET_KEY'], expiration)
+        token = serializer.dumps({'id': self.id}).decode('utf-8')
+        return token
+
+    @staticmethod
+    def reset_password(token, new_password):
+        serializer = Serializer(current_app.config['SECRET_KEY'])
+
+        try:
+
+            data = serializer.loads(token.encode('utf-8'))
+        except:
+            return False
+
+        uid = data.get('id')
+        with db.auto_commit():
+            user = User.query.get(uid)
+            user.password = new_password
+
+        return True
+
+    def can_send_drift(self):
+        if self.beans < 1:
+            return False
+
+        success_gifts_count = Gift.query.filter_by(uid=self.id, launched=True).count()
+        success_receive_count = Drift.query.filter_by(requester_id=self.id, pending=PendingStatus.Success).count()
+
+        return True if floor(success_receive_count / 2) <= floor(success_gifts_count) else False
+
+    @property
+    def summary(self):
+        return dict(
+            nickname=self.nickname,
+            beans=self.beans,
+            email=self.email,
+            send_receive=str(self.send_counter) + '/' + str(self.receive_counter)
+        )
     # def get_id(self):
     #     """
     #     使用flask_login 必须定义get_id 方法，但是可以使用

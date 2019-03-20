@@ -40,7 +40,7 @@ class YuShuBook:
 
     @property
     def first(self):
-        return self.books[0] if self.total >=1 else None
+        return self.books[0] if self.total >= 1 else None
 
 
 class YuShuBookOld:
